@@ -72,3 +72,26 @@ app.get('/products', (req, res) => {
       res.json({ message: 'User deleted successfully' });
     });
   });
+// Get all users
+app.get('/users', (req, res) => {
+  db.query('SELECT * FROM users', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+// Get all cities
+app.get('/cities', (req, res) => {
+  db.query('SELECT * FROM cities', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+// Get all companies
+app.get('/company', (req, res) => {
+  db.query('SELECT * FROM company', (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
