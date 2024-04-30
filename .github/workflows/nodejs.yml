@@ -37,4 +37,4 @@ jobs:
             cd ~/nodejs-testing
             git pull origin master
             npm install --production
-            pm2 restart index.js
+            ~/nodeejs-testing/pm2 restart script.js
