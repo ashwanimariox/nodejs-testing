@@ -95,3 +95,20 @@ app.get('/company', (req, res) => {
     res.json(results);
   });
 });
+// Get All Employees
+app.get('/employees', (req, res) => {
+  db.query('SELECT * FROM employees', (err, result) => {
+  if (err) throw err;
+  res.json(results);
+ });
+});
+
+// Get employee by id
+app.get('/employees/:id', (req, res) =>{
+   const {id} = req.params;
+   query.db('SELECT * FROM employees WHERE id = ?', [id], (err, results) => {
+      if (err) throw err;
+      res.json(results[0]);
+   });
+ })
+})
