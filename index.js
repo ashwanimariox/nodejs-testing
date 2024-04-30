@@ -121,7 +121,6 @@ app.post('/employees', (req, res) => {
   });
 });
 
-// Update employee
 app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
   const { name, designation, department, salary } = req.body;
@@ -133,4 +132,4 @@ app.put('/employees/:id', (req, res) => {
     }
     res.json({ message: 'Employee updated successfully' });
   });
-}
+});
