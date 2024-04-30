@@ -126,7 +126,11 @@ app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
   const { name, designation, department, salary } = req.body;
   db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err) => {
-    if (err) throw err;
+    if (err) {
+      console.error('Error updating employee:', err);
+      res.status(500).json({ error: 'An error occurred while updating employee' });
+      return;
+    }
     res.json({ message: 'Employee updated successfully' });
   });
-});
+}
