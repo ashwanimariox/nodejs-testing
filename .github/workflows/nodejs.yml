@@ -6,7 +6,12 @@ on:
       - master
 
 jobs:
-  checkout_and_setup:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -14,18 +19,14 @@ jobs:
       - name: Set up Node.js environment
         uses: actions/setup-node@v1
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
 
-  install_dependencies:
-    needs: checkout_and_setup
-    steps:
       - name: Install npm dependencies
         run: npm install
+        env:
+          CI: true
 
-  deploy:
-    needs: [checkout_and_setup, install_dependencies]
-    steps:
-      - name: SSH and deploy node app
+      - name: Deploy node app
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -36,4 +37,4 @@ jobs:
             cd ~/nodejs-testing
             git pull origin master
             npm install --production
-            pm2 restart index.js  # Adjust this command if needed
+            pm2 restart index.js
