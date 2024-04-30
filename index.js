@@ -110,5 +110,23 @@ app.get('/employees/:id', (req, res) =>{
       if (err) throw err;
       res.json(results[0]);
    });
- })
-})
+ });
+ //  update employee
+app.post('/employees', (req, res) => {
+  const { name, designation, department, salary } = req.body;
+  db.query('INSERT INTO employees (name, designation, department, salary) VALUES (?, ?, ?, ?)', [name, designation, department, salary], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Employee added successfully', id: result.insertId });
+  });
+});
+
+// update employee
+
+app.put('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, designation, department, salary } = req.body;
+  db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Employee updated successfully' });
+  });
+});
