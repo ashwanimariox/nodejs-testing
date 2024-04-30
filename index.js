@@ -130,6 +130,6 @@ app.put('/employees/:id', (req, res) => {
       res.status(500).json({ error: 'An error occurred while updating employee' });
       return;
     }
-    res.json({ message: 'Employee updated successfully' });
+    res.json({ message: 'Employee updation successfully' });
   });
 });
