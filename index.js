@@ -28,7 +28,7 @@ app.listen(PORT, () => {
 
 
 app.use('/products', cors());
-// Get all users
+// Get all products
 app.get('/products', (req, res) => {
     db.query('SELECT * FROM products', (err, results) => {
       if (err) throw err;
@@ -36,7 +36,7 @@ app.get('/products', (req, res) => {
     });
   });
   
-  // Get a user by ID
+  // Get a products by ID
   app.get('/products/:id', (req, res) => {
     const { id } = req.params;
     db.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
@@ -45,7 +45,7 @@ app.get('/products', (req, res) => {
     });
   });
   
-  // Create a new user
+  // Create a new products
   app.post('/products', (req, res) => {
     const { name, description } = req.body;
     db.query('INSERT INTO products (name, description) VALUES (?, ?)', [name, description], (err, result) => {
@@ -54,7 +54,7 @@ app.get('/products', (req, res) => {
     });
   });
   
-  // Update a user
+  // Update a products
   app.put('/products/:id', (req, res) => {
     const { id } = req.params;
     const { name, email } = req.body;
@@ -64,7 +64,7 @@ app.get('/products', (req, res) => {
     });
   });
   
-  // Delete a user
+  // Delete a products
   app.delete('/products/:id', (req, res) => {
     const { id } = req.params;
     db.query('DELETE FROM products WHERE id = ?', [id], (err) => {
@@ -72,7 +72,7 @@ app.get('/products', (req, res) => {
       res.json({ message: 'User deleted successfully' });
     });
   });
-// Get all users
+// Get all products
 app.get('/users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
     if (err) throw err;
@@ -114,6 +114,7 @@ app.get('/employees/:id', (req, res) =>{
 // Create employee
 app.post('/employees', (req, res) => {
   const { name, designation, department, salary } = req.body;
+  console.log(req.body)
   db.query('INSERT INTO employees (name, designation, department, salary) VALUES (?, ?, ?, ?)', [name, designation, department, salary], (err, result) => {
     if (err) throw err;
     res.json({ message: 'Employee added successfully', id: result.insertId });
