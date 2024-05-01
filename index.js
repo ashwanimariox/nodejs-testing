@@ -97,7 +97,7 @@ app.get('/company', (req, res) => {
 });
 // Get All Employees
 app.get('/employees', (req, res) => {
-  db.query('SELECT * FROM employees', (err, results) => { // Changed variable name from 'result' to 'results'
+  db.query('SELECT * FROM employees', (err, results) => { 
     if (err) throw err;
     res.json(results);
   });
@@ -125,19 +125,17 @@ app.post('/employees', (req, res) => {
 app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
   const { name, designation, department, salary } = req.body;
-  db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err, result) => { // Added 'result' parameter
-    if (err) {
-      console.error('Error updating employee:', err);
-      res.status(500).json({ error: 'An error occurred while updating employee' });
-      return;
-    }
+  db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err, result) => { 
+    if (err) throw err;
+    res.json(result[0]);
     res.json({ message: 'Employee updated successfully' });
   });
 });
 
-app.get('/employees/:name', (req, res ) =>{
-  db.query('SELECT * FROM employees WHERE name = ?', [req.params.name], (err, result) =>{
+app.post('/employees', (req, res ) =>{
+  const { name, designation, department, salary } = req.body;
+  db.query('INSERT INTO employees (name, designation, department, salary) VALUES (?, ?, ?, ?)', [name, designation, department, salary], (err, result) =>{
     if (err) throw err;
-    res.json(result[0]);
+    res.json({ message: 'Employee added successfully!' });
   });
 });
