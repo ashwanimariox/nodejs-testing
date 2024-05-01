@@ -6,6 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cors());
 
 const db = mysql.createConnection({
   host: 'localhost',
@@ -26,53 +27,55 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-
+// Products Endpoints
 app.use('/products', cors());
+
 // Get all products
 app.get('/products', (req, res) => {
-    db.query('SELECT * FROM products', (err, results) => {
-      if (err) throw err;
-      res.json(results);
-    });
+  db.query('SELECT * FROM products', (err, results) => {
+    if (err) throw err;
+    res.json(results);
   });
-  
-  // Get a products by ID
-  app.get('/products/:id', (req, res) => {
-    const { id } = req.params;
-    db.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
-      if (err) throw err;
-      res.json(results[0]);
-    });
+});
+
+// Get a product by ID
+app.get('/products/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
+    if (err) throw err;
+    res.json(results[0]);
   });
-  
-  // Create a new products
-  app.post('/products', (req, res) => {
-    const { name, description } = req.body;
-    db.query('INSERT INTO products (name, description) VALUES (?, ?)', [name, description], (err, result) => {
-      if (err) throw err;
-      res.json({ message: 'User added successfully', id: result.insertId });
-    });
+});
+
+// Create a new product
+app.post('/products', (req, res) => {
+  const { name, description } = req.body;
+  db.query('INSERT INTO products (name, description) VALUES (?, ?)', [name, description], (err, result) => {
+    if (err) throw err;
+    res.json({ message: 'Product added successfully', id: result.insertId });
   });
-  
-  // Update a products
-  app.put('/products/:id', (req, res) => {
-    const { id } = req.params;
-    const { name, email } = req.body;
-    db.query('UPDATE products SET name = ?, description = ? WHERE id = ?', [name, description, id], (err) => {
-      if (err) throw err;
-      res.json({ message: 'User updated successfully' });
-    });
+});
+
+// Update a product
+app.put('/products/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+  db.query('UPDATE products SET name = ?, description = ? WHERE id = ?', [name, description, id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Product updated successfully' });
   });
-  
-  // Delete a products
-  app.delete('/products/:id', (req, res) => {
-    const { id } = req.params;
-    db.query('DELETE FROM products WHERE id = ?', [id], (err) => {
-      if (err) throw err;
-      res.json({ message: 'User deleted successfully' });
-    });
+});
+
+// Delete a product
+app.delete('/products/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM products WHERE id = ?', [id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Product deleted successfully' });
   });
-// Get all products
+});
+
+// Users Endpoints
 app.get('/users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
     if (err) throw err;
@@ -80,7 +83,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-// Get all cities
+// Cities Endpoints
 app.get('/cities', (req, res) => {
   db.query('SELECT * FROM cities', (err, results) => {
     if (err) throw err;
@@ -88,13 +91,15 @@ app.get('/cities', (req, res) => {
   });
 });
 
-// Get all companies
+// Company Endpoints
 app.get('/company', (req, res) => {
   db.query('SELECT * FROM company', (err, results) => {
     if (err) throw err;
     res.json(results);
   });
 });
+
+// Employees Endpoints
 // Get All Employees
 app.get('/employees', (req, res) => {
   db.query('SELECT * FROM employees', (err, results) => { 
@@ -105,7 +110,7 @@ app.get('/employees', (req, res) => {
 
 // Get employee by id
 app.get('/employees/:id', (req, res) =>{
-   const {id} = req.params;
+   const { id } = req.params;
    db.query('SELECT * FROM employees WHERE id = ?', [id], (err, results) => { 
       if (err) throw err;
       res.json(results[0]);
@@ -125,17 +130,17 @@ app.post('/employees', (req, res) => {
 app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
   const { name, designation, department, salary } = req.body;
-  db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err, result) => { 
+  db.query('UPDATE employees SET name = ?, designation = ?, department = ?, salary = ? WHERE id = ?', [name, designation, department, salary, id], (err) => { 
     if (err) throw err;
-    res.json(result[0]);
     res.json({ message: 'Employee updated successfully' });
   });
 });
 
-app.post('/employees', (req, res ) =>{
-  const { name, designation, department, salary } = req.body;
-  db.query('INSERT INTO employees (name, designation, department, salary) VALUES (?, ?, ?, ?)', [name, designation, department, salary], (err, result) =>{
+// Delete employee
+app.delete('/employees/:id', (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM employees WHERE id = ?', [id], (err) => {
     if (err) throw err;
-    res.json({ message: 'Employee added successfully!' });
+    res.json({ message: 'Employee deleted successfully' });
   });
 });
