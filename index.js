@@ -257,41 +257,66 @@ app.get('/availability', (req, res) => {
   });
 });
 
-
-
-app.put('/availability/:id', (req, res) => {
+app.get('/availability/:id', (req, res) => {
   const { id } = req.params;
-  const { room_no, floor_no, category, charges } = req.body;
-  db.query('UPDATE availability SET room_no = ?, floor_no = ?, category = ?, charges = ? WHERE id = ?', [room_no, floor_no, category, charges, id], (err) => {
+  db.query('SELECT * FROM availability WHERE id = ?', [id], (err, results) => {
     if (err) {
-      console.error('Error updating availability:', err);
+      console.error('Error fetching availability:', err);
       res.status(500).json({ error: 'Internal server error' });
-      return;
+    } else if (results.length === 0) {
+      console.log('Room is not available or Booked');
+      res.status(404).json({ error: 'Room not found' });
+    } else {
+      console.log('Availability fetched successfully');
+      res.json({ message: 'Room is Available', data: results });
     }
-    res.json({ message: 'Room updated successfully' });
   });
 });
 
-app.put('/availability/', (req, res) => {
-  const { room_no, floor_no, category, charges } = req.body;
-  db.query('UPDATE availability SET room_no = ?, floor_no = ?, category = ?, charges = ? WHERE id = ?', [room_no, floor_no, category, charges, id], (err) => {
-    if (err) {
-      console.error('Error updating availability:', err);
-      res.status(500).json({ error: 'Internal server error' });
+app.put('/availability/:id', (req, res) => {
+  const { id } = req.params;
+  const { room_no, floor_no, category, charges, status } = req.body; 
+
+  db.query('UPDATE booked SET status = ? WHERE id = ?', ['Available', id], (error) => {
+    if (error) {
+      console.error('Error updating booked status:', error);
+      res.status(500).json({ error: 'An error occurred while updating booked status' });
       return;
     }
-    res.json({ message: 'Room updated successfully' });
+    
+    db.query('INSERT INTO availability (room_no, floor_no, category, charges, status) VALUES (?, ?, ?, ?, ?)', 
+      [room_no, floor_no, category, charges, status], 
+      (err) => {
+        if (err) {
+          console.error('Error adding availability:', err);
+          res.status(500).json({ error: 'Internal server error' });
+          return;
+        }
+        res.status(200).json({ message: 'Room made available successfully' });
+    });
   });
 });
 
 app.post('/availability', (req, res) => {
-  const { room_no, floor_no, category, charges } = req.body;
-  db.query('INSERT INTO availability (room_no, floor_no, category, charges) VALUES (?, ?, ?, ?)', [room_no, floor_no, category, charges], (err) => {
-    if (err) {
-      console.error('Error adding availability:', err);
-      res.status(500).json({ error: 'Internal server error' });
-      return;
-    }
-    res.json({ message: 'Room added successfully' });
+  const { room_no, floor_no, category, charges, status } = req.body; 
+
+  db.query('INSERT INTO booked (room_no, floor_no, category, charges, status) VALUES (?, ?, ?, ?, ?)', 
+    [room_no, floor_no, category, charges, status], 
+    (err) => {
+      if (err) {
+        console.error('Error adding availability:', err);
+        res.status(500).json({ error: 'Internal server error' });
+        return;
+      }
+      db.query('DELETE FROM availability WHERE room_no = ? AND floor_no = ? AND category = ?', 
+        [room_no, floor_no, category], 
+        (err) => {
+          if (err) {
+            console.error('Error deleting availability:', err);
+            res.status(500).json({ error: 'Internal server error' });
+            return;
+          }
+          res.json({ message: 'Room booked successfully' });
+      });
   });
 });
