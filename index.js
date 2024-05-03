@@ -27,10 +27,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-// Products Endpoints
+
 app.use('/products', cors());
 
-// Get all products
+
 app.get('/products', (req, res) => {
   db.query('SELECT * FROM products', (err, results) => {
     if (err) throw err;
@@ -38,7 +38,7 @@ app.get('/products', (req, res) => {
   });
 });
 
-// Get a product by ID
+
 app.get('/products/:id', (req, res) => {
   const { id } = req.params;
   db.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
@@ -47,7 +47,7 @@ app.get('/products/:id', (req, res) => {
   });
 });
 
-// Create a new product
+
 app.post('/products', (req, res) => {
   const { name, description } = req.body;
   db.query('INSERT INTO products (name, description) VALUES (?, ?)', [name, description], (err, result) => {
@@ -56,7 +56,7 @@ app.post('/products', (req, res) => {
   });
 });
 
-// Update a product
+
 app.put('/products/:id', (req, res) => {
   const { id } = req.params;
   const { name, description } = req.body;
@@ -66,7 +66,7 @@ app.put('/products/:id', (req, res) => {
   });
 });
 
-// Delete a product
+
 app.delete('/products/:id', (req, res) => {
   const { id } = req.params;
   db.query('DELETE FROM products WHERE id = ?', [id], (err) => {
@@ -75,7 +75,7 @@ app.delete('/products/:id', (req, res) => {
   });
 });
 
-// Users Endpoints
+
 app.get('/users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
     if (err) throw err;
@@ -83,7 +83,7 @@ app.get('/users', (req, res) => {
   });
 });
 
-// Cities Endpoints
+
 app.get('/cities', (req, res) => {
   db.query('SELECT * FROM cities', (err, results) => {
     if (err) throw err;
@@ -91,7 +91,7 @@ app.get('/cities', (req, res) => {
   });
 });
 
-// Company Endpoints
+
 app.get('/company', (req, res) => {
   db.query('SELECT * FROM company', (err, results) => {
     if (err) throw err;
@@ -99,8 +99,7 @@ app.get('/company', (req, res) => {
   });
 });
 
-// Employees Endpoints
-// Get All Employees
+
 app.get('/employees', (req, res) => {
   db.query('SELECT * FROM employees', (err, results) => { 
     if (err) throw err;
@@ -108,7 +107,7 @@ app.get('/employees', (req, res) => {
   });
 });
 
-// Get employee by id
+
 app.get('/employees/:id', (req, res) =>{
    const { id } = req.params;
    db.query('SELECT * FROM employees WHERE id = ?', [id], (err, results) => { 
@@ -117,7 +116,7 @@ app.get('/employees/:id', (req, res) =>{
    });
 });
 
-// Create employee
+
 app.post('/employees', (req, res) => {
   const { name, designation, department, salary } = req.body;
   db.query('INSERT INTO employees (name, designation, department, salary) VALUES (?, ?, ?, ?)', [name, designation, department, salary], (err, result) => {
@@ -126,7 +125,7 @@ app.post('/employees', (req, res) => {
   });
 });
 
-// Update employee
+
 app.put('/employees/:id', (req, res) => {
   const { id } = req.params;
   const { name, designation, department, salary } = req.body;
@@ -136,11 +135,69 @@ app.put('/employees/:id', (req, res) => {
   });
 });
 
-// Delete employee
+
 app.delete('/employees/:id', (req, res) => {
   const { id } = req.params;
   db.query('DELETE FROM employees WHERE id = ?', [id], (err) => {
     if (err) throw err;
     res.json({ message: 'Employee deleted successfully' });
+  });
+});
+
+
+app.get('/employees', (req, res) => {
+  
+  const { name, designation, salary } = req.query;
+  
+  
+  let sql = 'SELECT * FROM employees WHERE 1';
+  const params = [];
+
+  if (name) {
+    sql += ' AND name LIKE ?';
+    params.push(`%${name}%`);
+  }
+
+  if (designation) {
+    sql += ' AND designation LIKE ?';
+    params.push(`%${designation}%`);
+  }
+
+  if (salary) {
+    sql += ' AND salary = ?';
+    params.push(salary);
+  }
+
+  
+  db.query(sql, params, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+app.get('/availability', (req, res) => {
+  db.query('SELECT * FROM availability', (err, results) => {
+    if (err) throw err;
+    res.json({ message: 'List of Available Rooms', data: results });
+  });
+});
+
+
+
+app.put('/availability/:id', (req, res) => {
+  const { id } = req.params;
+  const { room_no, floor_no, category, charges } = req.body;
+  db.query('UPDATE availability SET room_no = ?, floor_no = ?, category = ?, charges = ? WHERE id = ?', [room_no, floor_no, category, charges, id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Room Booked Successfully' });
+  });
+});
+
+app.post('/availability/:id', (req, res) => {
+  const { id } = req.params;
+  const { room_no, floor_no, category, charges } = req.body;
+  db.query('INSERT INTO availability (room_no, floor_no, category, charges) VALUES (?, ?, ?, ?)', [room_no, floor_no, category, charges], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Room Added Successfully' });
   });
 });
