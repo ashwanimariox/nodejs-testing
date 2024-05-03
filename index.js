@@ -272,6 +272,18 @@ app.put('/availability/:id', (req, res) => {
   });
 });
 
+app.put('/availability/', (req, res) => {
+  const { room_no, floor_no, category, charges } = req.body;
+  db.query('UPDATE availability SET room_no = ?, floor_no = ?, category = ?, charges = ? WHERE id = ?', [room_no, floor_no, category, charges, id], (err) => {
+    if (err) {
+      console.error('Error updating availability:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+    res.json({ message: 'Room updated successfully' });
+  });
+});
+
 app.post('/availability', (req, res) => {
   const { room_no, floor_no, category, charges } = req.body;
   db.query('INSERT INTO availability (room_no, floor_no, category, charges) VALUES (?, ?, ?, ?)', [room_no, floor_no, category, charges], (err) => {
